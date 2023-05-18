@@ -17,8 +17,6 @@ namespace Business.Concrete
         private IUserService _userService;
         private ITokenHelper _tokenHelper;
         private IResetService _resetService;
-
-        private string code = null;
         public AuthManager(IUserService userService, ITokenHelper tokenHelper, IResetService resetService)
         {
             _userService = userService;
@@ -80,19 +78,19 @@ namespace Business.Concrete
             if (user != null)
             {
                 var deneme = new ResetPassword
-                {    
+                {
                     Code = getCode(),
                     Status = true,
                     UserId = 1
                 };
                 _resetService.Add(deneme);
-                string text = "Sıfırlama için kodunuz : " + getCode();
+                string text = "Sıfırlama için kodunuz : " + deneme.Code;
                 string subject = "Parola sıfırlama";
-                MailMessage msg = new MailMessage("travelersapp0@gmail.com", resetPassword.Email, subject, text);
+                MailMessage msg = new MailMessage("travelersapp@yandex.com.tr", resetPassword.Email, subject, text);
                 msg.IsBodyHtml = true;
-                SmtpClient smtpClient = new SmtpClient("smtp.yandex.com.tr", 465);
+                SmtpClient smtpClient = new SmtpClient("smtp.yandex.com.tr", 587);
                 smtpClient.UseDefaultCredentials = false;
-                NetworkCredential networkCredential = new NetworkCredential("travelersapp@yandex.com", "kujqcaevthhoeiwj");
+                NetworkCredential networkCredential = new NetworkCredential("travelersapp@yandex.com.tr", "kujqcaevthhoeiwj");
                 smtpClient.Credentials = networkCredential;
                 smtpClient.EnableSsl = true;
                 smtpClient.Send(msg);
@@ -105,16 +103,15 @@ namespace Business.Concrete
 
         public string getCode()
         {
-            if (code == null)
+            string code = "";
+            Random rnd = new Random();
+
+            for (int i = 0; i < 6; i++)
             {
-                Random rnd = new Random();
-                code = "";
-                for (int i = 0; i < 6; i++)
-                {
-                    char tmp = Convert.ToChar(rnd.Next(48, 58));
-                    code += tmp;
-                }
+                char tmp = Convert.ToChar(rnd.Next(48, 58));
+                code += tmp;
             }
+
             return code;
         }
     }
